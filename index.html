@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shift Rota Lite</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 32px;
+            text-align: center;
+        }
+        
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+            text-align: center;
+        }
+        
+        .error-message {
+            background: #ffebee;
+            border-left: 5px solid #f44336;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            color: #c62828;
+        }
+        
+        .success-message {
+            background: #e8f5e9;
+            border-left: 5px solid #4CAF50;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            color: #2e7d32;
+        }
+        
+        /* Manager Section */
+        .manager-section {
+            margin-bottom: 30px;
+            padding: 25px;
+            background: #fff3e0;
+            border-radius: 10px;
+            border-left: 5px solid #ff9800;
+        }
+        
+        .manager-section h2 {
+            color: #e65100;
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+        
+        .create-shift-form {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .create-shift-form input {
+            flex: 1;
+            min-width: 180px;
+            padding: 12px;
+            font-size: 16px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+        }
+        
+        .create-shift-form input:focus {
+            outline: none;
+            border-color: #ff9800;
+        }
+        
+        .create-btn {
+            padding: 12px 25px;
+            background: #ff9800;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        .create-btn:hover {
+            background: #f57c00;
+            transform: translateY(-2px);
+        }
+        
+        /* Shifts List */
+        .shifts-section {
+            margin-top: 30px;
+        }
+        
+        .shifts-section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+        
+        .shift-card {
+            background: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            border: 2px solid #e0e0e0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+        }
+        
+        .shift-card:hover {
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+            transform: translateY(-2px);
+        }
+        
+        .shift-header {
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .shift-date {
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .shift-time {
+            font-size: 16px;
+            color: #666;
+        }
+        
+        .shift-status {
+            margin: 15px 0;
+            padding: 15px;
+            background: #f5f5f5;
+            border-radius: 8px;
+        }
+        
+        .status-label {
+            font-weight: bold;
+            color: #555;
+            margin-bottom: 8px;
+        }
+        
+        .claimed-by {
+            font-size: 18px;
+            color: #2e7d32;
+            font-weight: bold;
+        }
+        
+        .unclaimed {
+            font-size: 16px;
+            color: #1976d2;
+            font-style: italic;
+        }
+        
+        /* Claim Form */
+        .claim-form {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .claim-form input {
+            flex: 1;
+            padding: 12px;
+            font-size: 16px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+        }
+        
+        .claim-form input:focus {
+            outline: none;
+            border-color: #4CAF50;
+        }
+        
+        .claim-btn {
+            padding: 12px 25px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        .claim-btn:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+        }
+        
+        .unclaim-btn {
+            padding: 10px 20px;
+            background: #ff9800;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        
+        .unclaim-btn:hover {
+            background: #f57c00;
+        }
+        
+        .delete-btn {
+            padding: 10px 20px;
+            background: #f44336;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: bold;
+            margin-top: 10px;
+            margin-left: 10px;
+        }
+        
+        .delete-btn:hover {
+            background: #da190b;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+            font-size: 18px;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+            font-size: 18px;
+        }
+        
+        /* Mobile Responsive */
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 24px;
+            }
+            
+            .create-shift-form {
+                flex-direction: column;
+            }
+            
+            .create-shift-form input,
+            .create-btn {
+                width: 100%;
+            }
+            
+            .claim-form {
+                flex-direction: column;
+            }
+            
+            .claim-form input,
+            .claim-btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📅 Shift Rota Lite</h1>
+        <p class="subtitle">Manager creates shifts • Staff claim shifts • Updates sync instantly across devices</p>
+        
+        <div id="messageArea"></div>
+        
+        <!-- Manager Section: Create Shifts -->
+        <div class="manager-section">
+            <h2>👔 Manager: Create New Shift</h2>
+            <div class="create-shift-form">
+                <input type="text" id="shiftDate" placeholder="Date (e.g., Monday Dec 11)">
+                <input type="text" id="shiftTime" placeholder="Time (e.g., 9am-5pm)">
+                <button class="create-btn" onclick="createShift()">➕ Create Shift</button>
+            </div>
+        </div>
+        
+        <!-- Shifts List -->
+        <div class="shifts-section">
+            <h2>📋 All Shifts</h2>
+            <div id="shiftsList" class="loading">
+                🔄 Connecting to database...
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK v11 (Modular) -->
+    <script type="module">
+        // Import Firebase tools
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js';
+        import { getFirestore, collection, addDoc, onSnapshot, updateDoc, deleteDoc, doc, serverTimestamp, query, orderBy } from 'https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js';
+
+        // Your Firebase Configuration
+        // TODO: Replace with YOUR actual Firebase config
+        const firebaseConfig = {
+            apiKey: "AIzaSyA1iS35WyZbG6os0NJp-6t-WSrwPgMi134",
+  authDomain: "shift-rota-lite-12bc4.firebaseapp.com",
+  projectId: "shift-rota-lite-12bc4",
+  storageBucket: "shift-rota-lite-12bc4.firebasestorage.app",
+  messagingSenderId: "491733436798",
+  appId: "1:491733436798:web:b9dcf0cf20ac17d1f9cb2f",
+  measurementId: "G-LVCSZ4RQWS"
+        };
+
+        let db;
+        let isConnected = false;
+
+        // Initialize Firebase
+        try {
+            const app = initializeApp(firebaseConfig);
+            db = getFirestore(app);
+            console.log('✅ Firebase initialized successfully');
+            isConnected = true;
+        } catch (error) {
+            console.error('❌ Firebase initialization error:', error);
+            showError('Failed to connect to Firebase. Please check your configuration.');
+        }
+
+        // Show error message
+        function showError(message) {
+            const messageArea = document.getElementById('messageArea');
+            messageArea.innerHTML = `
+                <div class="error-message">
+                    ❌ <strong>Error:</strong> ${message}
+                </div>
+            `;
+        }
+
+        // Show success message
+        function showSuccess(message) {
+            const messageArea = document.getElementById('messageArea');
+            messageArea.innerHTML = `
+                <div class="success-message">
+                    ✅ ${message}
+                </div>
+            `;
+            setTimeout(() => {
+                messageArea.innerHTML = '';
+            }, 3000);
+        }
+
+        // Create a new shift (Manager)
+        window.createShift = async function() {
+            const date = document.getElementById('shiftDate').value.trim();
+            const time = document.getElementById('shiftTime').value.trim();
+
+            if (!date || !time) {
+                alert('⚠️ Please fill in both date and time!');
+                return;
+            }
+
+            if (!isConnected) {
+                showError('Not connected to database. Please refresh the page.');
+                return;
+            }
+
+            try {
+                await addDoc(collection(db, 'shifts'), {
+                    date: date,
+                    time: time,
+                    claimedBy: null,
+                    createdAt: serverTimestamp()
+                });
+
+                // Clear inputs
+                document.getElementById('shiftDate').value = '';
+                document.getElementById('shiftTime').value = '';
+                
+                showSuccess('Shift created successfully!');
+            } catch (error) {
+                console.error('Error creating shift:', error);
+                
+                if (error.code === 'permission-denied') {
+                    showError('Permission denied. Please check Firestore security rules.');
+                } else {
+                    showError('Error creating shift: ' + error.message);
+                }
+            }
+        };
+
+        // Listen for real-time shift updates
+        if (isConnected) {
+            const q = query(collection(db, 'shifts'), orderBy('createdAt', 'desc'));
+            
+            onSnapshot(q, 
+                (snapshot) => {
+                    const shiftsList = document.getElementById('shiftsList');
+                    
+                    console.log('✅ Received shifts update. Total shifts:', snapshot.size);
+                    
+                    if (snapshot.empty) {
+                        shiftsList.innerHTML = `
+                            <div class="empty-state">
+                                📭 No shifts available yet.<br>
+                                <small>Managers can create shifts above!</small>
+                            </div>
+                        `;
+                        return;
+                    }
+
+                    shiftsList.innerHTML = '';
+                    
+                    snapshot.forEach((docSnap) => {
+                        const shift = docSnap.data();
+                        const shiftId = docSnap.id;
+                        
+                        const shiftCard = document.createElement('div');
+                        shiftCard.className = 'shift-card';
+                        
+                        let claimSection = '';
+                        
+                        if (shift.claimedBy) {
+                            // Shift is claimed
+                            claimSection = `
+                                <div class="shift-status">
+                                    <div class="status-label">Status:</div>
+                                    <div class="claimed-by">✅ Claimed by: ${shift.claimedBy}</div>
+                                </div>
+                                <button class="unclaim-btn" onclick="unclaimShift('${shiftId}', '${shift.claimedBy}')">
+                                    ↩️ Unclaim Shift
+                                </button>
+                                <button class="delete-btn" onclick="deleteShift('${shiftId}')">
+                                    🗑️ Delete
+                                </button>
+                            `;
+                        } else {
+                            // Shift is available
+                            claimSection = `
+                                <div class="shift-status">
+                                    <div class="status-label">Status:</div>
+                                    <div class="unclaimed">⚪ Available - No one claimed yet</div>
+                                </div>
+                                <div class="claim-form">
+                                    <input 
+                                        type="text" 
+                                        id="staffName-${shiftId}" 
+                                        placeholder="Enter your name to claim this shift"
+                                        maxlength="30"
+                                    >
+                                    <button class="claim-btn" onclick="claimShift('${shiftId}')">
+                                        ✋ Claim Shift
+                                    </button>
+                                </div>
+                                <button class="delete-btn" onclick="deleteShift('${shiftId}')">
+                                    🗑️ Delete
+                                </button>
+                            `;
+                        }
+                        
+                        shiftCard.innerHTML = `
+                            <div class="shift-header">
+                                <div class="shift-date">📅 ${shift.date}</div>
+                                <div class="shift-time">⏰ ${shift.time}</div>
+                            </div>
+                            ${claimSection}
+                        `;
+                        
+                        shiftsList.appendChild(shiftCard);
+                    });
+                },
+                (error) => {
+                    console.error('Error listening to shifts:', error);
+                    const shiftsList = document.getElementById('shiftsList');
+                    
+                    if (error.code === 'permission-denied') {
+                        shiftsList.innerHTML = `
+                            <div class="error-message">
+                                ❌ <strong>Permission Denied</strong><br>
+                                Please set up Firestore security rules:<br>
+                                <code style="display:block; margin-top:10px; padding:10px; background:#f5f5f5;">
+                                rules_version = '2';<br>
+                                service cloud.firestore {<br>
+                                &nbsp;&nbsp;match /databases/{database}/documents {<br>
+                                &nbsp;&nbsp;&nbsp;&nbsp;match /shifts/{shiftId} {<br>
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;allow read, write: if true;<br>
+                                &nbsp;&nbsp;&nbsp;&nbsp;}<br>
+                                &nbsp;&nbsp;}<br>
+                                }
+                                </code>
+                            </div>
+                        `;
+                    } else {
+                        shiftsList.innerHTML = `
+                            <div class="error-message">
+                                ❌ Error loading shifts: ${error.message}
+                            </div>
+                        `;
+                    }
+                }
+            );
+        }
+
+        // Claim a shift (Staff)
+        window.claimShift = async function(shiftId) {
+            const nameInput = document.getElementById(`staffName-${shiftId}`);
+            const staffName = nameInput.value.trim();
+
+            if (!staffName) {
+                alert('⚠️ Please enter your name!');
+                nameInput.focus();
+                return;
+            }
+
+            try {
+                await updateDoc(doc(db, 'shifts', shiftId), {
+                    claimedBy: staffName
+                });
+                
+                showSuccess(`Shift claimed by ${staffName}!`);
+            } catch (error) {
+                console.error('Error claiming shift:', error);
+                
+                if (error.code === 'permission-denied') {
+                    showError('Permission denied. Please check Firestore security rules.');
+                } else {
+                    showError('Error claiming shift: ' + error.message);
+                }
+            }
+        };
+
+        // Unclaim a shift
+        window.unclaimShift = async function(shiftId, staffName) {
+            const confirmUnclaim = confirm(`Are you sure ${staffName} wants to unclaim this shift?`);
+            
+            if (!confirmUnclaim) {
+                return;
+            }
+
+            try {
+                await updateDoc(doc(db, 'shifts', shiftId), {
+                    claimedBy: null
+                });
+                
+                showSuccess('Shift unclaimed successfully!');
+            } catch (error) {
+                console.error('Error unclaiming shift:', error);
+                showError('Error unclaiming shift: ' + error.message);
+            }
+        };
+
+        // Delete a shift (Manager)
+        window.deleteShift = async function(shiftId) {
+            const confirmDelete = confirm('⚠️ Are you sure you want to delete this shift?');
+            
+            if (!confirmDelete) {
+                return;
+            }
+
+            try {
+                await deleteDoc(doc(db, 'shifts', shiftId));
+                showSuccess('Shift deleted successfully!');
+            } catch (error) {
+                console.error('Error deleting shift:', error);
+                showError('Error deleting shift: ' + error.message);
+            }
+        };
+    </script>
+</body>
+</html>
+```
+
+---
+
+## 🎯 Summary - What You Must Do:
+
+### **1. Set Firestore Rules (CRITICAL!)**
+```
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /shifts/{shiftId} {
+      allow read: if true;
+      allow write: if true;
+    }
+  }
+}
